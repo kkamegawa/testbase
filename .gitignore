@@ -355,3 +355,5 @@ drop/
 .idea/
 
 bin/
+.vscode/
+*.zip
