@@ -1,3 +1,6 @@
+variables:
+  group: TestBaseSecret
+
 jobs:
   - job:
     displayName: Create TestBase Package
