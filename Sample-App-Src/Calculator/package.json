@@ -19,6 +19,7 @@
     "core-js": "^3.8.3",
     "electron-squirrel-startup": "^1.0.0",
     "electron-wix-msi": "^4.0.0",
+    "mini-css-extract-plugin": "^2.7.6",
     "path": "^0.12.7",
     "vue": "^3.2.13",
     "vue-router": "4"
@@ -33,7 +34,6 @@
     "electron-devtools-installer": "^3.1.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "mini-css-extract-plugin": "^2.7.6",
     "vue-cli-plugin-electron-builder": "~2.1.1"
   },
   "eslintConfig": {
