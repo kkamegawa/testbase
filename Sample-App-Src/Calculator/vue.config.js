@@ -2,6 +2,8 @@
 * Copyright (c) Microsoft Corporation. All rights reserved.
 * Licensed under the MIT License.
 *--------------------------------------------------------------------------------------------*/
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 module.exports = {
   transpileDependencies:true,
   pluginOptions: {
@@ -13,4 +15,7 @@ module.exports = {
       }
     }
   },
+  configureWebpack: {
+    plugins: [new MiniCssExtractPlugin()],
+  }
 };
