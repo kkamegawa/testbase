@@ -43,18 +43,17 @@ jobs:
           includeRootFolder: false
           archiveFile: "$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip"
 
-      - task: PowerShell@2
-        displayName: "Upload Test Base Package"
+      - task: AzureCLI@2
         inputs:
-          targetType: "filePath"
-          filePath: Utilities/CICD/Azure-DevOps/CreateOrUpdatePackage.ps1
+          azureSubscription: 'AzureTestBaseConnection'
+          scriptType: 'pscore'
+          scriptLocation: 'scriptPath'
+          scriptPath: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps/CreateOrUpdatePackage.ps1'
           arguments: '-packagePath $(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip -applicationName $(Build.DefinitionName) -packageVersion $(Build.BuildNumber)'
-          workingDirectory: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps'
+          addSpnToEnvironment: true
+          useGlobalConfig: true
+          workingDirectory: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps/'
         env:
-            AZURE_SUBSCRIPTION_ID: $(azure.subscriptionId)
-            AZURE_CLIENT_ID: $(azure.clientId)
-            AZURE_CLIENT_SECRET: $(azure.clientSecret)
-            AZURE_TENANT_ID: $(azure.tenantId)
             RESOURCE_GROUP_NAME: $(azure.resourceGroupName)
             TESTBASE_ACCOUNT_NAME: $(azure.testBaseAccountName)
 

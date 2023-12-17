@@ -22,20 +22,14 @@ if(!(Test-Path $packagePath))
 }
 
 $packageFileName = (Get-Item $packagePath).Name.ToLower()
-$subscriptionId = $Env:AZURE_SUBSCRIPTION_ID
-$clientId = $Env:AZURE_CLIENT_ID
-$clientSecret = $Env:AZURE_CLIENT_SECRET
-$tenantId = $Env:AZURE_TENANT_ID
 $resourceGroupName = $Env:RESOURCE_GROUP_NAME
 $testBaseAccountName = $Env:TESTBASE_ACCOUNT_NAME
 
 #--------------------------------------------------------------------------------------------------------------
 # Connect to Azure Account
 #--------------------------------------------------------------------------------------------------------------
-Write-Host "Sign in with a service principal."
-az login --service-principal -u $clientId -p $clientSecret --tenant $tenantId
-Write-Host "az account set --subscription $subscriptionId"
-az account set --subscription $subscriptionId
+Write-Host "Get subscription"
+$subscriptionId = $(az account show --query id --output tsv)
 
 Write-Host "Get Access Token"
 $accessTokenString = $(az account get-access-token --query accessToken --output tsv)
@@ -105,7 +99,7 @@ Function UpdatePackage {
 #--------------------------------------------------------------------------------------------------------------
 #refer to https://docs.microsoft.com/en-us/rest/api/testbase/packages/list-by-test-base-account
 Function ListPackage {
-    Write-Host "List package"
+    Write-Host "List package to $resourceGroupName"
     $requestUrl = "https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroupName}/providers/Microsoft.TestBase/testBaseAccounts/${testBaseAccountName}/packages?api-version=2020-12-16-preview"
     $result = Invoke-RestMethod -Method GET -Uri "$requestUrl" -Headers $authHeader
     return $result.value
