@@ -41,15 +41,15 @@ jobs:
         inputs:
           rootFolderOrFile: "$(build.BinariesDirectory)"
           includeRootFolder: false
-          archiveFile: "$(Build.ArtifactStagingDirectory)/$(build.archiveName).zip"
+          archiveFile: "$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip"
 
       - task: PowerShell@2
         displayName: "Upload Test Base Package"
         inputs:
           targetType: "filePath"
           filePath: Utilities/CICD/Azure-DevOps/CreateOrUpdatePackage.ps1
-          arguments: '-packagePath $(Build.ArtifactStagingDirectory)/$(build.archiveName).zip -applicationName $(Build.DefinitionName) -packageVersion $(Build.BuildNumber)'
-          workingDirectory: 'Utilities/CICD/Azure-DevOps'
+          arguments: '-packagePath $(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip -applicationName $(Build.DefinitionName) -packageVersion $(Build.BuildNumber)'
+          workingDirectory: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps'
         env:
             AZURE_SUBSCRIPTION_ID: $(azure.subscriptionId)
             AZURE_CLIENT_ID: $(azure.clientId)
@@ -61,5 +61,5 @@ jobs:
       - task: PublishBuildArtifacts@1
         displayName: "Publish Artifact"
         inputs:
-          PathtoPublish: "$(Build.ArtifactStagingDirectory)/$(build.archiveName).zip"
+          PathtoPublish: "$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip"
         condition: succeededOrFailed()
