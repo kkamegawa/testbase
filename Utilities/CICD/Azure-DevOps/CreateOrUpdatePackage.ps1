@@ -31,6 +31,9 @@ $testBaseAccountName = $Env:TESTBASE_ACCOUNT_NAME
 Write-Host "Get subscription"
 $subscriptionId = $(az account show --query id --output tsv)
 
+write-host $resourceGroupName
+Write-Host $test
+
 Write-Host "Get Access Token"
 $accessTokenString = $(az account get-access-token --query accessToken --output tsv)
 
@@ -113,6 +116,7 @@ Function UploadPackageZip {
     process {
         Write-Host "Upload package zip"
         $requestUrl = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.TestBase/testBaseAccounts/$testBaseAccountName/getFileUploadUrl?api-version=2020-12-16-preview"
+        write-host "request uri:" + $requestUrl
         $body = @{
             "blobName"= "$packageFileName"
         } | ConvertTo-Json -Depth 100
