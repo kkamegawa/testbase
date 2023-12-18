@@ -54,8 +54,9 @@ jobs:
           useGlobalConfig: true
           workingDirectory: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps/'
         env:
-            RESOURCE_GROUP_NAME: $(azure.resourceGroupName)
-            TESTBASE_ACCOUNT_NAME: $(azure.testBaseAccountName)
+            RESOURCE_GROUP_NAME: $(resourceGroupName)
+            TESTBASE_ACCOUNT_NAME: $(testBaseAccountName)
+            AZURE_CORE_OUTPUT: 'none'
 
       - task: PublishBuildArtifacts@1
         displayName: "Publish Artifact"
