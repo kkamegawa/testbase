@@ -54,7 +54,7 @@ Function CreatePackage {
         Write-Host "Create package"
         CheckPackageSetting('PackageSetting.json')
         $packageName = $applicationName + "-" + $packageVersion
-        $requestUrl = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.TestBase/testBaseAccounts/$testBaseAccountName/packages/$packageName?api-version=2020-12-16-preview"
+        $requestUrl = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.TestBase/testBaseAccounts/$testBaseAccountName/packages/$packageName?api-version=2023-11-01-preview"
         $packageSetting = Get-Content 'PackageSetting.json' | ConvertFrom-Json
         $packageSetting.properties[0].applicationName = "$applicationName"
         $packageSetting.properties[0].version = "$packageVersion"
@@ -83,7 +83,7 @@ Function UpdatePackage {
         Write-Host "Update package"
         CheckPackageSetting('AppSetting.json')
         $packageName = $applicationName + "-" + $packageVersion
-        $requestUrl = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.TestBase/testBaseAccounts/$testBaseAccountName/packages/$packageName?api-version=2020-12-16-preview"
+        $requestUrl = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.TestBase/testBaseAccounts/$testBaseAccountName/packages/$packageName?api-version=2023-11-01-preview"
         $packageSetting = Get-Content 'AppSetting.json' | ConvertFrom-Json
         $packageSetting.properties[0].blobPath = $uploadUrl.Substring(0, $uploadUrl.IndexOf("?"))
         $body = $packageSetting | ConvertTo-Json -Depth 10
@@ -103,7 +103,7 @@ Function UpdatePackage {
 #refer to https://docs.microsoft.com/en-us/rest/api/testbase/packages/list-by-test-base-account
 Function ListPackage {
     Write-Host "List package to $resourceGroupName"
-    $requestUrl = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.TestBase/testBaseAccounts/$testBaseAccountName/packages?api-version=2020-12-16-preview"
+    $requestUrl = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.TestBase/testBaseAccounts/$testBaseAccountName/packages?api-version=2023-11-01-preview"
     $result = Invoke-RestMethod -Method GET -Uri "$requestUrl" -Headers $authHeader
     return $result.value
 }
@@ -115,8 +115,8 @@ Function ListPackage {
 Function UploadPackageZip {
     process {
         Write-Host "Upload package zip"
-        $requestUrl = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.TestBase/testBaseAccounts/$testBaseAccountName/getFileUploadUrl?api-version=2020-12-16-preview"
-        write-host "request uri:" + $requestUrl
+        $requestUrl = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.TestBase/testBaseAccounts/$testBaseAccountName/getFileUploadUrl?api-version=2023-11-01-preview"
+        write-host "request uri:"  $requestUrl
         $body = @{
             "blobName"= "$packageFileName"
         } | ConvertTo-Json -Depth 100
