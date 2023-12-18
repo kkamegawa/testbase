@@ -54,13 +54,16 @@ Function CreatePackage {
         Write-Host "Create package"
         CheckPackageSetting('PackageSetting.json')
         $packageName = $applicationName + "-" + $packageVersion
+        write-host "PackageName:" $packageName
         $requestUrl = "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.TestBase/testBaseAccounts/$testBaseAccountName/packages/$packageName?api-version=2023-11-01-preview"
         $packageSetting = Get-Content 'PackageSetting.json' | ConvertFrom-Json
         $packageSetting.properties[0].applicationName = "$applicationName"
         $packageSetting.properties[0].version = "$packageVersion"
         $packageSetting.properties[0].blobPath = $uploadUrl.Substring(0, $uploadUrl.IndexOf("?"))
         $body = $packageSetting | ConvertTo-Json -Depth 10
-        Write-Debug $body
+        write-host $packageSetting.properties[0].applicationName 
+        write-host $packageSetting.properties[0].version 
+        write-host $packageSetting.properties[0].blobPath
         try {
             Invoke-RestMethod -Method PUT -Uri "$requestUrl" -Headers $authHeader -Body $body -ContentType "application/json"
         }

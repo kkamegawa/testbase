@@ -1,65 +1,81 @@
 variables:
 - group: TestBaseSecret
 
-jobs:
-  - job:
-    displayName: Create TestBase Package
-    pool:
-      vmImage: 'windows-latest'
-    workspace:
-      clean: true
-    timeoutInMinutes: 0
-    steps:
-      - checkout: self
+stages:
+  - stage: Build
+    displayName: 'Build'
+    jobs:
+      - job:
+        displayName: Create TestBase Package
+        pool:
+          vmImage: 'windows-latest'
+        workspace:
+          clean: true
+        timeoutInMinutes: 0
+        steps:
+          - checkout: self
 
-      - task: PowerShell@2
-        displayName: "Build App"
-        inputs:
-          targetType: "inline"
-          workingDirectory: 'Sample-App-src/Calculator'
-          script: |
-            $env:Path += ";$($env:WIX)Bin"
-            $(build.SourcesDirectory)/Sample-App-src/Calculator/build.ps1
+          - task: PowerShell@2
+            displayName: "Build App"
+            inputs:
+              targetType: "inline"
+              workingDirectory: 'Sample-App-src/Calculator'
+              script: |
+                $env:Path += ";$($env:WIX)Bin"
+                $(build.SourcesDirectory)/Sample-App-src/Calculator/build.ps1
 
-      - task: CopyFiles@2
-        displayName: "Copy scripts"
-        inputs:
-          SourceFolder: "Samples/Package/Out-of-Box/Calculator-OOB-Sample"
-          TargetFolder: "$(build.BinariesDirectory)"
-          OverWrite: true
+          - task: CopyFiles@2
+            displayName: "Copy scripts"
+            inputs:
+              SourceFolder: "Samples/Package/Out-of-Box/Calculator-OOB-Sample"
+              TargetFolder: "$(build.BinariesDirectory)"
+              OverWrite: true
 
-      - task: CopyFiles@2
-        displayName: "Copy MSI"
-        inputs:
-          SourceFolder: "$(build.SourcesDirectory)/Sample-App-src/Calculator/windows_installer"
-          Contents: '*.msi'
-          TargetFolder: "$(build.BinariesDirectory)/Bin"
-          OverWrite: true
+          - task: CopyFiles@2
+            displayName: "Copy MSI"
+            inputs:
+              SourceFolder: "$(build.SourcesDirectory)/Sample-App-src/Calculator/windows_installer"
+              Contents: '*.msi'
+              TargetFolder: "$(build.BinariesDirectory)/Bin"
+              OverWrite: true
+          - task: ArchiveFiles@2
+            displayName: "Archive zip"
+            inputs:
+              rootFolderOrFile: "$(build.BinariesDirectory)"
+              includeRootFolder: false
+              archiveFile: "$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip"
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Build Artifacts'
+            inputs:
+              PathtoPublish: "$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip"
+              ArtifactName: 'testBase'
+              publishLocation: 'Container'
 
-      - task: ArchiveFiles@2
-        displayName: "Archive zip"
-        inputs:
-          rootFolderOrFile: "$(build.BinariesDirectory)"
-          includeRootFolder: false
-          archiveFile: "$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip"
+  - stage: 'Deploy to TestBase'
+    dependsOn: Build
+    jobs:
+      - job:
+        displayName: 'Deploy Job'
+        steps:
+        - task: DownloadBuildArtifacts@0
+          displayName: 'Download Artifact'
+          inputs:
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'testBase'
+            downloadPath: '$(System.ArtifactsDirectory)'
+        - task: AzureCLI@2
+          inputs:
+            azureSubscription: 'AzureTestBaseConnection'
+            scriptType: 'pscore'
+            scriptLocation: 'scriptPath'
+            scriptPath: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps/CreateOrUpdatePackage.ps1'
+            arguments: '-packagePath $(Build.ArtifactsDirectory)/Calculator-$(build.BuildNumber).zip -applicationName $(Build.DefinitionName) -packageVersion $(Build.BuildNumber)'
+            addSpnToEnvironment: true
+            useGlobalConfig: true
+            workingDirectory: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps/'
+          env:
+              RESOURCE_GROUP_NAME: $(resourceGroupName)
+              TESTBASE_ACCOUNT_NAME: $(testBaseAccountName)
+              AZURE_CORE_OUTPUT: $(AzureCoreOutput)
 
-      - task: AzureCLI@2
-        inputs:
-          azureSubscription: 'AzureTestBaseConnection'
-          scriptType: 'pscore'
-          scriptLocation: 'scriptPath'
-          scriptPath: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps/CreateOrUpdatePackage.ps1'
-          arguments: '-packagePath $(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip -applicationName $(Build.DefinitionName) -packageVersion $(Build.BuildNumber)'
-          addSpnToEnvironment: true
-          useGlobalConfig: true
-          workingDirectory: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps/'
-        env:
-            RESOURCE_GROUP_NAME: $(resourceGroupName)
-            TESTBASE_ACCOUNT_NAME: $(testBaseAccountName)
-            AZURE_CORE_OUTPUT: $(AzureCoreOutput)
-
-      - task: PublishBuildArtifacts@1
-        displayName: "Publish Artifact"
-        inputs:
-          PathtoPublish: "$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip"
-        condition: succeededOrFailed()
