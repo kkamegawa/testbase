@@ -56,7 +56,7 @@ jobs:
         env:
             RESOURCE_GROUP_NAME: $(resourceGroupName)
             TESTBASE_ACCOUNT_NAME: $(testBaseAccountName)
-            AZURE_CORE_OUTPUT: 'none'
+            AZURE_CORE_OUTPUT: $(AzureCoreOutput)
 
       - task: PublishBuildArtifacts@1
         displayName: "Publish Artifact"
