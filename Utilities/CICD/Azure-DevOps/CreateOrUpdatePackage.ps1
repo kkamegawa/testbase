@@ -60,6 +60,7 @@ Function CreatePackage {
         $packageSetting.properties[0].version = "$packageVersion"
         $packageSetting.properties[0].blobPath = $uploadUrl.Substring(0, $uploadUrl.IndexOf("?"))
         $body = $packageSetting | ConvertTo-Json -Depth 10
+        Write-Debug $body
         try {
             Invoke-RestMethod -Method PUT -Uri "$requestUrl" -Headers $authHeader -Body $body -ContentType "application/json"
         }
