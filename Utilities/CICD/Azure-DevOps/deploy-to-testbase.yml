@@ -51,7 +51,7 @@ stages:
               ArtifactName: 'testBase'
               publishLocation: 'Container'
 
-  - stage: 'Deploy to TestBase'
+  - stage: 'Deploy'
     dependsOn: Build
     jobs:
       - job:
