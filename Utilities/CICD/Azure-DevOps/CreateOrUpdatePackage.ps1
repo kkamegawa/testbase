@@ -64,6 +64,8 @@ Function CreatePackage {
             Invoke-RestMethod -Method PUT -Uri "$requestUrl" -Headers $authHeader -Body $body -ContentType "application/json"
         }
         catch {
+            Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+            Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
             Write-Host "Failed to create package"
             exit 1
         }
@@ -91,6 +93,8 @@ Function UpdatePackage {
             Invoke-RestMethod -Method PATCH -Uri "$requestUrl" -Headers $authHeader -Body $body -ContentType "application/json"
         }
         catch {
+            Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+            Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
             Write-Host "Failed to update package"
             exit 1
         }
@@ -134,6 +138,8 @@ Function UploadPackageZip {
             Invoke-RestMethod -Uri $uploadUrl -Method Put -Headers $headers -InFile $packagePath
         }
         catch {
+            Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+            Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
             Write-Host "Failed to upload package zip"
             exit 1
         }
