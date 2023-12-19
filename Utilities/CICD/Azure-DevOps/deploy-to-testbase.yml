@@ -44,12 +44,11 @@ stages:
               rootFolderOrFile: "$(build.BinariesDirectory)"
               includeRootFolder: false
               archiveFile: "$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip"
-          - task: PublishBuildArtifacts@1
-            displayName: 'Publish Build Artifacts'
+          - task: PublishPipelineArtifact@1
             inputs:
-              PathtoPublish: "$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip"
-              ArtifactName: 'testBase'
-              publishLocation: 'Container'
+              targetPath: "$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip"
+              artifact: 'testBase'
+              publishLocation: 'pipeline'
 
   - stage: 'Deploy'
     dependsOn: Build
@@ -59,16 +58,14 @@ stages:
         pool:
           vmImage: 'windows-latest'
         steps:
-        - task: DownloadBuildArtifacts@1
+        - task: DownloadPipelineArtifact@2
           inputs:
             buildType: 'specific'
             project: 'c89d2c7a-5fae-4c8b-963e-a4e69fcd7688'
-            pipeline: '257'
+            definition: '257'
             buildVersionToDownload: 'latest'
-            downloadType: 'single'
             artifactName: 'testBase'
-            downloadPath: '$(System.ArtifactsDirectory)'
-            cleanDestinationFolder: true        
+            targetPath: '$(Build.ArtifactsDirectory)'
         - task: AzureCLI@2
           inputs:
             azureSubscription: 'AzureTestBaseConnection'
