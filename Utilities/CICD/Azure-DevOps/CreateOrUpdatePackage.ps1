@@ -61,6 +61,7 @@ Function CreatePackage {
         $packageSetting.properties[0].version = "$packageVersion"
         $packageSetting.properties[0].blobPath = $uploadUrl.Substring(0, $uploadUrl.IndexOf("?"))
         $body = $packageSetting | ConvertTo-Json -Depth 10
+        write-host $requestUrl
         write-host $packageSetting.properties[0].applicationName 
         write-host $packageSetting.properties[0].version 
         write-host $packageSetting.properties[0].blobPath
