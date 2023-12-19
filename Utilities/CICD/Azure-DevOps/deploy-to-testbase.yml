@@ -56,14 +56,17 @@ stages:
     jobs:
       - job:
         displayName: 'Deploy Job'
+        pool:
+          vmImage: 'windows-latest'
         steps:
-        - task: DownloadBuildArtifacts@0
-          displayName: 'Download Artifact'
+        - task: DownloadPipelineArtifact@2
           inputs:
-            buildType: 'current'
-            downloadType: 'single'
+            buildType: 'specific'
+            project: 'c89d2c7a-5fae-4c8b-963e-a4e69fcd7688'
+            definition: '257'
+            buildVersionToDownload: 'latest'
             artifactName: 'testBase'
-            downloadPath: '$(System.ArtifactsDirectory)'
+            targetPath: '$(System.ArtifactsDirectory'
         - task: AzureCLI@2
           inputs:
             azureSubscription: 'AzureTestBaseConnection'
