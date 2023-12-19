@@ -59,14 +59,16 @@ stages:
         pool:
           vmImage: 'windows-latest'
         steps:
-        - task: DownloadPipelineArtifact@2
+        - task: DownloadBuildArtifacts@1
           inputs:
             buildType: 'specific'
             project: 'c89d2c7a-5fae-4c8b-963e-a4e69fcd7688'
-            definition: '257'
+            pipeline: '257'
             buildVersionToDownload: 'latest'
+            downloadType: 'single'
             artifactName: 'testBase'
-            targetPath: '$(System.ArtifactsDirectory'
+            downloadPath: '$(System.ArtifactsDirectory)'
+            cleanDestinationFolder: true        
         - task: AzureCLI@2
           inputs:
             azureSubscription: 'AzureTestBaseConnection'
