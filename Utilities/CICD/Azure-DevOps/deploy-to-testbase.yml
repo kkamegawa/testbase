@@ -59,15 +59,13 @@ stages:
         pool:
           vmImage: 'windows-latest'
         steps:
-        - task: DownloadBuildArtifacts@0
-          displayName: 'Download Artifact'
+        - task: DownloadBuildArtifacts@1
           inputs:
-            project: 'c89d2c7a-5fae-4c8b-963e-a4e69fcd7688'
-            definition: '257'
-            buildType: 'specific'
+            buildType: 'current'
             downloadType: 'single'
             artifactName: 'drop'
             downloadPath: '$(System.ArtifactsDirectory)'
+            cleanDestinationFolder: true
         - task: AzureCLI@2
           inputs:
             azureSubscription: 'AzureTestBaseConnection'
