@@ -1,6 +1,11 @@
 variables:
 - group: TestBaseSecret
 
+trigger:
+ branches: 
+  include:
+    - main
+
 stages:
   - stage: Build
     displayName: 'Build'
@@ -59,25 +64,30 @@ stages:
         pool:
           vmImage: 'windows-latest'
         steps:
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            buildType: 'current'
+            artifactName: 'drop'
+            targetPath: '$(Build.ArtifactStagingDirectory)/pipeline'
         - task: DownloadBuildArtifacts@1
           inputs:
             buildType: 'current'
             downloadType: 'single'
             artifactName: 'drop'
-            downloadPath: '$(Build.ArtifactStagingDirectory)'
+            downloadPath: '$(Build.ArtifactStagingDirectory)/build'
             cleanDestinationFolder: true
-        - task: AzureCLI@2
-          inputs:
-            azureSubscription: 'AzureTestBaseConnection'
-            scriptType: 'pscore'
-            scriptLocation: 'scriptPath'
-            scriptPath: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps/CreateOrUpdatePackage.ps1'
-            arguments: '-packagePath $(Build.ArtifactStagingDirectory)/drop/Calculator-$(build.BuildNumber).zip -applicationName $(Build.DefinitionName) -packageVersion $(Build.BuildNumber)'
-            addSpnToEnvironment: true
-            useGlobalConfig: true
-            workingDirectory: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps/'
-          env:
-              RESOURCE_GROUP_NAME: $(resourceGroupName)
-              TESTBASE_ACCOUNT_NAME: $(testBaseAccountName)
-              AZURE_CORE_OUTPUT: $(AzureCoreOutput)
+#        - task: AzureCLI@2
+#          inputs:
+#            azureSubscription: 'AzureTestBaseConnection'
+#            scriptType: 'pscore'
+#            scriptLocation: 'scriptPath'
+#            scriptPath: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps/CreateOrUpdatePackage.ps1'
+#            arguments: '-packagePath $(Build.ArtifactStagingDirectory)/drop/Calculator-$(build.BuildNumber).zip -applicationName $(Build.DefinitionName) -packageVersion $(Build.BuildNumber)'
+#            addSpnToEnvironment: true
+#            useGlobalConfig: true
+#            workingDirectory: '$(build.SourcesDirectory)/Utilities/CICD/Azure-DevOps/'
+#          env:
+#              RESOURCE_GROUP_NAME: $(resourceGroupName)
+#              TESTBASE_ACCOUNT_NAME: $(testBaseAccountName)
+#              AZURE_CORE_OUTPUT: $(AzureCoreOutput)
 
