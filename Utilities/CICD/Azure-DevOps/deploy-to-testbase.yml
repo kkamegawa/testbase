@@ -49,12 +49,11 @@ stages:
               rootFolderOrFile: "$(build.BinariesDirectory)"
               includeRootFolder: false
               archiveFile: "$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip"
-          - task: PublishBuildArtifacts@1
-            displayName: 'Publish Build Artifacts'
+          - task: PublishPipelineArtifact@1
             inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip'
-              ArtifactName: 'drop'
-              publishLocation: 'Container'
+              targetPath: '$(Build.ArtifactStagingDirectory)/Calculator-$(build.BuildNumber).zip'
+              publishLocation: 'pipeline'
+              artifact: 'drop'
 
   - stage: 'Deploy'
     dependsOn: Build
